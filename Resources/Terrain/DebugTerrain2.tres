@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=3 format=2]
+
+[ext_resource path="res://Assets/Sprites/Dirt.png" type="Texture" id=1]
+[ext_resource path="res://Scripts/Map/Terrain.cs" type="Script" id=2]
+
+[resource]
+script = ExtResource( 2 )
+Label = "Dirt"
+Texture = ExtResource( 1 )
+BlendStrength = 1
+Passable = true

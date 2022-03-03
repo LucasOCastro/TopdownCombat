@@ -1,0 +1,22 @@
+[gd_resource type="ShaderMaterial" load_steps=6 format=2]
+
+[ext_resource path="res://Assets/Materials/TerrainShader.tres" type="Shader" id=1]
+[ext_resource path="res://mapIndexTexture.tres" type="Texture" id=2]
+[ext_resource path="res://new_texturearray.texarr" type="TextureArray" id=3]
+[ext_resource path="res://Assets/Materials/TerrainBlendNoise.tres" type="OpenSimplexNoise" id=4]
+
+[sub_resource type="NoiseTexture" id=1]
+noise = ExtResource( 4 )
+
+[resource]
+shader = ExtResource( 1 )
+shader_param/mapSize = 64
+shader_param/tileSize = 1
+shader_param/tileTextureSize = 32
+shader_param/tileTextureCount = 2
+shader_param/blendOffset = -0.4
+shader_param/blendMultiplier = 1.0
+shader_param/additiveNoiseStrength = 2.0
+shader_param/textureArray = ExtResource( 3 )
+shader_param/terrainIndexTexture = ExtResource( 2 )
+shader_param/additiveBlendNoise = SubResource( 1 )

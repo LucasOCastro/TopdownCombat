@@ -1,0 +1,101 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://Scripts/GameManager.cs" type="Script" id=1]
+[ext_resource path="res://Scripts/CameraController.cs" type="Script" id=2]
+[ext_resource path="res://Assets/Materials/TerrainMaterial.tres" type="Material" id=3]
+[ext_resource path="res://Assets/TerrainGenerationSimplex.tres" type="OpenSimplexNoise" id=4]
+[ext_resource path="res://Scripts/PathDrawer.cs" type="Script" id=5]
+[ext_resource path="res://Scripts/Map/MapRenderer.cs" type="Script" id=6]
+[ext_resource path="res://testTex.tres" type="Texture" id=7]
+[ext_resource path="res://Scripts/GridDrawer.cs" type="Script" id=8]
+[ext_resource path="res://icon.png" type="Texture" id=9]
+[ext_resource path="res://Scripts/SkillBar.cs" type="Script" id=10]
+
+[sub_resource type="QuadMesh" id=1]
+size = Vector2( 63, 63 )
+center_offset = Vector3( 31.5, 31.5, 0 )
+
+[node name="Scene" type="Node2D"]
+
+[node name="MapRenderer" type="MeshInstance2D" parent="."]
+material = ExtResource( 3 )
+scale = Vector2( 10, 10 )
+mesh = SubResource( 1 )
+texture = ExtResource( 7 )
+script = ExtResource( 6 )
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource( 1 )
+MapGenSimplex = ExtResource( 4 )
+mapSize = 64
+mapRendererPath = NodePath("../MapRenderer")
+gridDrawerPath = NodePath("../GridDrawer")
+pathDrawerPath = NodePath("../PathDrawer")
+canvasPath = NodePath("../CanvasLayer")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+script = ExtResource( 2 )
+movementSpeed = 150.0
+minZoom = 0.1
+
+[node name="GridDrawer" type="Control" parent="."]
+mouse_filter = 2
+script = ExtResource( 8 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+externalColor = Color( 0.937255, 0.937255, 0.937255, 1 )
+internalColor = Color( 0.596078, 0.596078, 0.596078, 0.756863 )
+internalWidth = 0.035
+
+[node name="Entities" type="Node" parent="."]
+
+[node name="PathDrawer" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+script = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -433.0
+margin_top = 225.0
+margin_right = 433.456
+margin_bottom = 225.0
+mouse_filter = 2
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+margin_left = 367.0
+margin_right = 431.0
+margin_bottom = 64.0
+mouse_filter = 0
+texture = ExtResource( 9 )
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HBoxContainer"]
+margin_left = 435.0
+margin_right = 499.0
+margin_bottom = 64.0
+rect_min_size = Vector2( 64, 64 )
+
+[node name="SkillBar" type="Control" parent="CanvasLayer"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+script = ExtResource( 10 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+containerPath = NodePath("../HBoxContainer")

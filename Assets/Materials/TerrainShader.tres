@@ -1,0 +1,101 @@
+[gd_resource type="Shader" format=2]
+
+[resource]
+code = "shader_type canvas_item;
+
+uniform int mapSize = 16;
+uniform int tileSize = 1;
+uniform int tileTextureSize = 32;
+uniform int tileTextureCount = 2;
+uniform sampler2DArray textureArray;
+uniform sampler2D terrainIndexTexture;
+
+
+uniform float blendOffset = 0f;
+uniform float blendMultiplier = 1f;
+
+uniform sampler2D additiveBlendNoise;
+uniform float additiveNoiseStrength = 0f;
+
+varying vec2 pos;
+
+void vertex(){
+	pos = VERTEX;
+}
+
+float fmod(float a, int b){
+	int floored = int(floor(a));
+	float decimals = a - float(floored);
+	return float(floored % b) + decimals;
+}
+
+vec4 getTexTerrainInfo(vec2 vertexAlignedPos){
+	return texture(terrainIndexTexture, vertexAlignedPos / float(mapSize));
+}
+
+bool tryBlendWithAdjacent(inout vec4 color, vec2 vertexAlignedPos, vec2 offset, vec2 normalizedPosInTile){
+	vec2 offsetPos = clamp(vertexAlignedPos + offset, vec2(0f), vec2(float(mapSize-1)));
+	vec4 currentTerrainInfo = getTexTerrainInfo(vertexAlignedPos);
+	vec4 terrainInfo = getTexTerrainInfo(offsetPos);
+	//I can probably get rid of these if statements by multiplying the weight by sign(abs(colorDifference later in the code))
+	if (currentTerrainInfo.x == terrainInfo.x || currentTerrainInfo.y > terrainInfo.y) return false;
+	vec4 terrainColor = texture(textureArray, vec3(normalizedPosInTile, terrainInfo.r));
+	
+	vec2 clampedOffset = clamp(offset, 0f, 1f);
+	
+	vec2 edgePoint = vertexAlignedPos + clampedOffset;
+	vec2 globalPos = (vertexAlignedPos + normalizedPosInTile*float(tileSize));
+	vec2 differenceToEdgePoint = edgePoint - globalPos;
+	float weight = 1f - (length(differenceToEdgePoint * abs(offset)));
+	float additiveNoise = texture(additiveBlendNoise, globalPos / float(mapSize)).r * additiveNoiseStrength;
+	//weight = clamp((weight + blendOffset + additiveNoise) * blendMultiplier, 0f, 1f);
+	weight = clamp((weight + blendOffset) * blendMultiplier, 0f, 1f);
+	additiveNoise *= 1f - (length(differenceToEdgePoint * abs(offset)));
+	weight = clamp((weight + additiveNoise), 0f, 1f);
+
+	
+	//color = mix(color, vec4(weight,0,0,1), weight);
+	color = mix(color, terrainColor, weight);
+	return true;
+}
+
+void fragment(){
+	//read terrain info from a texture
+	vec2 vertexAlignedPos = vec2(pos.x - fmod(pos.x, tileSize), pos.y - fmod(pos.y, tileSize)); //vec2(floor(pos.x), floor(pos.y));
+	vec4 texTerrainInfo = getTexTerrainInfo(vertexAlignedPos);
+	float biomeIndex = texTerrainInfo.r;
+	
+	vec2 posInTile = vec2(fmod(pos.x, tileSize), fmod(pos.y, tileSize));
+	vec2 normalizedPosInTile = posInTile / float(tileSize);
+	//set from texture array, needs just the normalized and the array depth
+	COLOR = texture(textureArray, vec3(normalizedPosInTile, biomeIndex));
+	
+	
+	//set from big atlas texture, needs to account for multiple textures horizontally in the same depth
+	//normalizedPosInTile.x = (biomeIndex + normalizedPosInTile.x) / float(tileTextureCount);
+    //COLOR = texture(TEXTURE, normalizedPosInTile);
+	
+
+	vec4 blendedColor = COLOR;
+	//blendedColor = vec4(0,0,0,1);
+	bool blendedRight = tryBlendWithAdjacent(blendedColor, vertexAlignedPos, vec2(1,0), normalizedPosInTile);
+	bool blendedDown = tryBlendWithAdjacent(blendedColor, vertexAlignedPos, vec2(0,1), normalizedPosInTile);
+	bool blendedLeft = tryBlendWithAdjacent(blendedColor, vertexAlignedPos, vec2(-1,0), normalizedPosInTile);
+	bool blendedUp = tryBlendWithAdjacent(blendedColor, vertexAlignedPos, vec2(0,-1), normalizedPosInTile);
+	
+	if (!blendedRight && !blendedDown){
+		tryBlendWithAdjacent(blendedColor, vertexAlignedPos, vec2(1,1), normalizedPosInTile);
+	}
+	if (!blendedRight && !blendedUp){
+		tryBlendWithAdjacent(blendedColor, vertexAlignedPos, vec2(1,-1), normalizedPosInTile);
+	}
+	if (!blendedLeft && !blendedDown){
+		tryBlendWithAdjacent(blendedColor, vertexAlignedPos, vec2(-1,1), normalizedPosInTile);
+	}
+	if (!blendedLeft && !blendedUp){
+		tryBlendWithAdjacent(blendedColor, vertexAlignedPos, vec2(-1,-1), normalizedPosInTile);
+	}
+	
+	
+	COLOR = blendedColor;
+}"
