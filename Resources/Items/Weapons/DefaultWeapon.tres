@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource( 1 )
 Label = "DefaultWeapon"
-ActionPointCost = 4
+ActionPointCost = 30
 BulletTexture = ExtResource( 2 )
 BulletScale = 0.15
 BulletSpeed = 200.0

@@ -8,15 +8,12 @@ namespace CombatGame
         private List<PathGen.Node> internalPath;
         public Vec2Int this[int index] => internalPath[index].position;
 
-        public Vec2Int End => this[TileCount - 1];
+        public Vec2Int End => this[internalPath.Count - 1];
         public Vec2Int Start => this[0];
 
         public int TileCount => internalPath.Count;
 
-        /// <summary>
-        /// The number of tiles ignoring the starting tile.
-        /// </summary>
-        public int PathLength => TileCount - 1;
+        public int PathCost => internalPath[internalPath.Count - 1].gCost;
 
         public bool IsBefore(Path path) => End == path.Start || End.AdjacentTo(path.Start);
         public bool IsAfter(Path path) => path.IsBefore(this);
@@ -33,34 +30,43 @@ namespace CombatGame
             }
         }
 
+        public static Path DeepCopy(Path path) => new Path(PathGen.Node.DeepCopy(path.internalPath[path.internalPath.Count - 1]));
+
         /// <summary>Removes the last 'amount' tiles of the path.</summary>
-        public static void TrimFromEnd(Path path, int amount)
+        public static Path TrimFromEnd(Path path, int amount)
         {
-            if (amount <= 0){
-                return;
-            }
             if (amount >= path.TileCount){
-                path.internalPath.Clear();
-                return;
+                return null;
             }
-            int index = path.internalPath.Count - amount;
-            path.internalPath.RemoveRange(index, amount);
+            Path clone = DeepCopy(path);
+            clone.internalPath.RemoveRange(path.internalPath.Count - amount, amount);
+            return clone;
         }
 
         /// <summary>Removes the first 'amount' tiles of the path.</summary>
-        public static void TrimFromStart(Path path, int amount)
+        public static Path TrimFromStart(Path path, int amount)
         {
-            if (amount <= 0){
-                return;
-            }
             if (amount >= path.TileCount){
-                path.internalPath.Clear();
-                return;
+                return null;
             }
-            path.internalPath.RemoveRange(0, amount);
-            if (path.TileCount > 0){
-                path.internalPath[0].parent = null;
+            Path clone = DeepCopy(path);
+            clone.internalPath.RemoveRange(0, amount);
+            clone.internalPath[0].parent = null;
+            return clone;
+        }
+
+        public static Path LimitCost(Path path, int maxCost)
+        {
+            PathGen.Node node = path.internalPath[path.internalPath.Count - 1];
+            while (node != null)
+            {
+                if (node.gCost <= maxCost)
+                {
+                    return new Path(PathGen.Node.DeepCopy(node));
+                }
+                node = node.parent;
             }
+            return null;
         }
 
         /// <summary>Copies both paths and return a new path from their copies.</summary>
@@ -76,7 +82,7 @@ namespace CombatGame
             }
 
             if (!a.End.AdjacentTo(b.Start)){
-                throw new System.ArgumentException("Paths are not adjacent in " + nameof(MergePaths), nameof(a));
+                throw new System.Exception("Paths are not adjacent in " + nameof(MergePaths));
             }
 
             PathGen.Node aEndCopy = PathGen.Node.DeepCopy(aEnd);

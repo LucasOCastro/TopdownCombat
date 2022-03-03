@@ -7,5 +7,5 @@
 script = ExtResource( 1 )
 Label = "DefaultEntity"
 Texture = ExtResource( 2 )
-MaxActionPoints = 12
+MaxActionPoints = 100
 BaseHealth = 15

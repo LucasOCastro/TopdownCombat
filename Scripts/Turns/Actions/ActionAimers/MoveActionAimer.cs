@@ -13,7 +13,7 @@ namespace CombatGame
         {
         }
 
-        public override bool CanCurrentlyBeSelected() => ActionDoer.ActionPoints > 0;
+        public override bool CanCurrentlyBeSelected() => ActionDoer.ActionPoints > PathGen.BASE_COST;
 
         private Path CalculatePreviewPath(Vec2Int mouseTile, Map map)
         {
@@ -25,7 +25,8 @@ namespace CombatGame
             {
                 return currentPreviewPath;
             }
-            if ((fullPreviewPath?.PathLength ?? 0) == ActionDoer.ActionPoints)
+            int currentFullCost = fullPreviewPath?.PathCost ?? 0;
+            if (currentFullCost == ActionDoer.ActionPoints)
             {
                 return null;
             }
@@ -36,13 +37,10 @@ namespace CombatGame
                 return null;
             }
 
-            int fullCost = (fullPreviewPath?.PathLength ?? 0) + path.PathLength;
-            if (fullCost > ActionDoer.ActionPoints)
-            {
-                Path.TrimFromEnd(path, fullCost - ActionDoer.ActionPoints);
-                if (path.PathLength == 0){
-                    path = null;
-                }
+            
+            int fullCost = currentFullCost + path.PathCost;
+            if (fullCost > ActionDoer.ActionPoints){
+                path = Path.LimitCost(path, ActionDoer.ActionPoints - currentFullCost);
             }
             return path;
         }
@@ -97,7 +95,7 @@ namespace CombatGame
                         currentPreviewPath = null;
                     }
                     
-                    if (!mouse.Shift && fullPreviewPath != null){// && map.GetMousePosition() == fullPreviewPath.End){
+                    if (!mouse.Shift && fullPreviewPath != null){
                         MoveAction moveAction = new MoveAction(ActionDoer, fullPreviewPath);
                         return moveAction;
                     }

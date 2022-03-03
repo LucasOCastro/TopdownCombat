@@ -33,13 +33,6 @@ namespace CombatGame
             return absDifference.x == 1 && absDifference.y == 1;
         }
 
-        // public int IntDistanceTo(Vec2Int tile)
-        // {
-        //     Vec2Int difference = tile - this;
-        //     int diagonals = Mathf.Abs(difference.x - difference.y);
-        //     return diagonals * 
-        // }
-
         public override string ToString()
         {
             return $"({x},{y})";

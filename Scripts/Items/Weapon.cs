@@ -8,7 +8,7 @@ namespace CombatGame
         public string Label { get; private set; }
 
         [Export]
-        public int ActionPointCost { get; private set; } = 6;
+        public int ActionPointCost { get; private set; } = 50;
 
         [Export]
         public Texture BulletTexture { get; private set; }

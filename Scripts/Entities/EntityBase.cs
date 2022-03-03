@@ -11,7 +11,7 @@ namespace CombatGame
         public Texture Texture {get; private set;}
 
         [Export]
-        public int MaxActionPoints {get; private set;}
+        public int MaxActionPoints { get; private set; } = 100;
 
         [Export]
         public int BaseHealth { get; private set; }

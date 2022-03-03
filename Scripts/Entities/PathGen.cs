@@ -11,12 +11,14 @@ namespace CombatGame
         {
             public Node parent;
             public Vec2Int position;
-            /// <summary>Cost from beninning of path.</summary>
-            public float gCost;
-            /// <summary>Distance to end of path.</summary>
-            public float hCost;
 
-            public float FullCost => gCost + hCost;
+            /// <summary>Cost from beninning of path.</summary>
+            public int gCost => parent != null ? parent.gCost + CalcCost(parent.position, position) : 0;
+
+            /// <summary>Distance to end of path.</summary>
+            public int hCost;
+
+            public int FullCost => gCost + hCost;
 
             public int PathSize => (parent?.PathSize ?? 0) + 1;
 
@@ -24,10 +26,6 @@ namespace CombatGame
             {
                 this.position = position;
                 this.parent = parent;
-
-                if (parent != null){
-                    gCost = parent.gCost + CalcCost(parent.position, position);
-                }
 
                 //Unsure if this is how I should calc this but ok
                 Vec2Int distance = end - position;
@@ -38,7 +36,7 @@ namespace CombatGame
 
             private Node(){}
 
-            public static Node ShallowCopy(Node node) => new Node() { parent = node.parent, position = node.position, gCost = node.gCost, hCost = node.hCost };
+            public static Node ShallowCopy(Node node) => new Node() { parent = node.parent, position = node.position, hCost = node.hCost };
 
             public static Node DeepCopy(Node node)
             {
@@ -164,10 +162,9 @@ namespace CombatGame
                         openSet.Add(neighborNode);
                         continue;
                     }
-                    float gCost = current.gCost + CalcCost(current.position, neighbor);
+                    int gCost = current.gCost + CalcCost(current.position, neighbor);
                     if (gCost < neighborNode.gCost){
                         neighborNode.parent = current;
-                        neighborNode.gCost = gCost;
                     }
                 }
             }

@@ -9,7 +9,7 @@ namespace CombatGame
 
         public Path Path { get; }
 
-        public MoveAction(Entity doer, Path path) : base(doer, path.PathLength)
+        public MoveAction(Entity doer, Path path) : base(doer, path.PathCost)
         {
             if (path == null){
                 throw new System.Exception("Null path in " + nameof(MoveAction));
