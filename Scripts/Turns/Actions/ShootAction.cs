@@ -48,13 +48,15 @@ namespace CombatGame
             bullet.Texture = weapon.BulletTexture;
             bullet.Scale = Vector2.One * weapon.BulletScale;
             bullet.Position = GameManager.Instance.LoadedMap.GetTileCenter(Doer.Position);
-            bullet.LookAt(hitTileCenter);
             GameManager.Instantiate(bullet);
+            bullet.LookAt(hitTileCenter);
         }
 
         private Vec2Int CalcHitTile()
         {
-            return target;
+            float hitChance = AttackUtility.CalculateRangedHitChance(Doer, weapon, target);
+            float random = Random.Randf();
+            return (random < hitChance) ? target : AttackUtility.CalculateMissedHitTile(Doer.Position, target, hitChance, random);
         }
     }
 }
