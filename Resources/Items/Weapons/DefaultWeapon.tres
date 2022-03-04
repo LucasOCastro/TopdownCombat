@@ -11,3 +11,6 @@ BulletTexture = ExtResource( 2 )
 BulletScale = 0.15
 BulletSpeed = 200.0
 Damage = 5
+MinDistanceForFallof = 0
+MaxDistanceForFallof = 1000
+DistanceAccuracyFallof = 0.005

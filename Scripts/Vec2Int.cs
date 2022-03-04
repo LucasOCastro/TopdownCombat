@@ -7,6 +7,11 @@ namespace CombatGame
     {
         public static Vec2Int Zero => new Vec2Int(0,0);
         public static Vec2Int One => new Vec2Int(1, 1);
+        public static Vec2Int Right => new Vec2Int(1, 0);
+        public static Vec2Int Left => new Vec2Int(-1, 0);
+        public static Vec2Int Up => new Vec2Int(0, -1);
+        public static Vec2Int Down => new Vec2Int(0, 1);
+
 
         public static Vec2Int Floor(Vector2 vector) => new Vec2Int(Mathf.FloorToInt(vector.x), Mathf.FloorToInt(vector.y));
         public Vec2Int Abs() => new Vec2Int(Mathf.Abs(x), Mathf.Abs(y));
@@ -31,6 +36,15 @@ namespace CombatGame
         {
             Vec2Int absDifference = (tile - this).Abs();
             return absDifference.x == 1 && absDifference.y == 1;
+        }
+
+        public int IntDistanceTo(Vec2Int tile)
+        {
+            Vec2Int difference = (tile - this).Abs();
+            // return Mathf.FloorToInt(Mathf.Sqrt(difference.x * difference.x + difference.y * difference.y));
+            int directCount = Mathf.Abs(difference.x - difference.y);
+            int diagonalCount = Mathf.Abs(Mathf.Max(difference.x, difference.y) - directCount);
+            return (directCount * PathGen.BASE_COST) + (diagonalCount * PathGen.DIAGONAL_COST);
         }
 
         public override string ToString()

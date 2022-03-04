@@ -19,5 +19,15 @@ namespace CombatGame
 
         [Export]
         public int Damage { get; private set; }
+
+        [Export]
+        public float Accuracy { get; private set; } = 1f;
+
+        [Export]
+        public int MinDistanceForFallof { get; private set; }
+        [Export]
+        public int MaxDistanceForFallof { get; private set; } = 1000;
+        [Export]
+        public float DistanceAccuracyFallof { get;  private set; }
     }
 }

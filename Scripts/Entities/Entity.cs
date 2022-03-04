@@ -31,6 +31,10 @@ namespace CombatGame
         public bool IsPlayer => Faction == Faction.Player;
         public bool IsEnemy => Faction == Faction.Enemy;
 
+        //TODO temp
+        public int MaximumSeeDistance { get; } = 200;
+        public int MaximumEfficientShootDistance { get; } = 114;
+
         public Weapon EquippedWeapon { get; set; }
 
         private int _actionPoints;

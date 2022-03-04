@@ -56,6 +56,7 @@ namespace CombatGame
 
         private static int CalcCost(Vec2Int a, Vec2Int b)
         {
+            // return a.IntDistanceTo(b);
             if (a.DiagonallyAdjacentTo(b)){
                 return DIAGONAL_COST;
             }

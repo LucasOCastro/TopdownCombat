@@ -60,7 +60,7 @@ namespace CombatGame
         public override void _Ready()
 		{
 			Instance = this;
-			ResourceLoader.LoadAll();
+            ResourceLoader.LoadAll();
 
 			MapRenderer = GetNode<MapRenderer>(mapRendererPath);
 			MapRenderer.Scale = GameScale;
