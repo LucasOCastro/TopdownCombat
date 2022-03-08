@@ -22,14 +22,15 @@ namespace CombatGame
 
         private Dictionary<System.Type, MapObjectInstanceBase[]> gridsDict = new Dictionary<System.Type, MapObjectInstanceBase[]>();
         private Dictionary<System.Type, List<MapObjectInstanceBase>> listsDict = new Dictionary<System.Type, List<MapObjectInstanceBase>>();
-        private MapObjectInstanceBase[] GetGrid<T>() => gridsDict.GetOrAddNew(typeof(T), Size * Size);
-        private List<MapObjectInstanceBase> GetList<T>() => listsDict.GetOrAddNew(typeof(T));
-        public T GetAt<T>(Vec2Int xy) where T : MapObjectInstanceBase => GetGrid<T>()[XYToIndex(xy)] as T;
+        private MapObjectInstanceBase[] GetGrid(System.Type type) => gridsDict.GetOrAddNew(type, Size * Size);
+        private List<MapObjectInstanceBase> GetList(System.Type type) => listsDict.GetOrAddNew(type);
+        public T GetAt<T>(Vec2Int xy) where T : MapObjectInstanceBase => GetGrid(typeof(T))[XYToIndex(xy)] as T;
 
-        public void UpdatePosition<T>(T obj, Vec2Int from, Vec2Int to) where T: MapObjectInstanceBase
+        public void UpdatePosition(MapObjectInstanceBase obj, Vec2Int from, Vec2Int to)
         {
+            GD.Print("Update for " + obj + " from " + from + XYToIndex(from) + " to " + to + XYToIndex(to));
             //FIXME not working
-            var grid = GetGrid<T>();
+            var grid = GetGrid(obj.GetType());
             int fromIndex = XYToIndex(from);
             if (grid[fromIndex] == obj) grid[fromIndex] = null;
             grid[XYToIndex(to)] = obj;
@@ -78,25 +79,25 @@ namespace CombatGame
             FillTerrain();
 
             StructureBase structure = ResourceDatabase<StructureBase>.GetAny();
-            var grid = GetGrid<Structure>();
+            var grid = GetGrid(typeof(Structure));
             SpawnAt(new Structure(structure), new Vec2Int(4, 4));
             SpawnAt(new Structure(structure), new Vec2Int(5, 4));
             SpawnAt(new Structure(structure), new Vec2Int(4, 5));
         }
 
-        public void SpawnAt<T>(T obj, Vec2Int position) where T: MapObjectInstanceBase
+        public void SpawnAt(MapObjectInstanceBase obj, Vec2Int position)
         {
-            var grid = GetGrid<T>();
+            var grid = GetGrid(obj.GetType());
             grid[XYToIndex(position)] = obj;
             obj.OnSpawn(this, position);
 
-            GetList<T>().Add(obj);
+            GetList(obj.GetType()).Add(obj);
         }
 
-        public void Despawn<T>(T obj) where T: MapObjectInstanceBase
+        public void Despawn(MapObjectInstanceBase obj)
         {
-            GetGrid<T>()[XYToIndex(obj.Position)] = null;
-            GetList<T>().Remove(obj);
+            GetGrid(obj.GetType())[XYToIndex(obj.Position)] = null;
+            GetList(obj.GetType()).Remove(obj);
         }
 
         private void FillTerrain()

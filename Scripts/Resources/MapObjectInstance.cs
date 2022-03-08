@@ -47,6 +47,11 @@ namespace CombatGame
             //This is temporary, later probably wouldnt want to completly free it.
             Renderer.QueueFree();
         }
+
+        public override string ToString()
+        {
+            return resourceBase.Label;
+        }
     }
 
     public abstract class MapObjectInstance<T> : MapObjectInstanceBase where T: MapObjectResource
