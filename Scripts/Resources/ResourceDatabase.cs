@@ -14,26 +14,4 @@ namespace CombatGame
             AllResources.Add(resource);
         }
     }
-    // public static class ResourceDatabase
-    // {
-    //     public static List<Terrain> AllTerrain {get;} = new List<Terrain>();
-    //     private static Dictionary<string, Terrain> terrainByName = new Dictionary<string, Terrain>();
-
-    //     public static Terrain TerrainByName(string name, bool throwOnFail = false)
-    //     {
-    //         Terrain terrain = terrainByName.GetOrDefault(name);
-    //         if (terrain == null)
-    //         {
-    //             throw new System.Exception("No terrain found with name "+name);
-    //         }
-    //         return terrain;
-    //     }
-    //     public static Terrain AnyTerrain => AllTerrain.FirstOrDefault();
-
-    //     public static void RegisterTerrain(Terrain terrain)
-    //     {
-    //         AllTerrain.Add(terrain);
-    //         terrainByName.Add(terrain.Label, terrain);
-    //     }
-    // }
 }

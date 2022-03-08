@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/Structures/StructureBase.cs" type="Script" id=1]
+[ext_resource path="res://addons/better-texture-array/icons/RED.svg" type="Texture" id=2]
+
+[resource]
+script = ExtResource( 1 )
+Label = "DefaultWall"
+Sprite = ExtResource( 2 )
+Passable = false
+CanSeeThrough = false

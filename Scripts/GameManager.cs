@@ -7,16 +7,15 @@ namespace CombatGame
 	{
         public static GameManager Instance { get; private set; }
 
-
         [Export]
 		private float gameScale 
 		{
-			get => GameScale.x;
-			set => GameScale = new Vector2(value, value);
+            get => GameScale;
+            set => GameScale = value;
         }
-        public static Vector2 GameScale { get; private set; } = new Vector2(10, 10);
+        public static float GameScale { get; private set; } = 10;
 
-		[Export]
+        [Export]
 		private int mapSize;
         public Map LoadedMap { get; private set; }
 
@@ -63,7 +62,7 @@ namespace CombatGame
             ResourceLoader.LoadAll();
 
 			MapRenderer = GetNode<MapRenderer>(mapRendererPath);
-			MapRenderer.Scale = GameScale;
+			MapRenderer.Scale = Vector2.One * GameScale;
 			//TODO hardcoded value
 			MapRenderer.Init(32, ResourceLoader.GenTerrainsTexture(), ResourceLoader.GenTerrainsTextureArray());
 
@@ -75,11 +74,11 @@ namespace CombatGame
 
 			var entityBase = ResourceDatabase<EntityBase>.GetAny();
 			Entity playerEntity = new Entity(entityBase, Faction.Player);
-            playerEntity.EquippedWeapon = ResourceDatabase<Weapon>.GetAny();
-            LoadedMap.SpawnEntity(playerEntity, new Vec2Int(0, 0));
+            playerEntity.EquippedWeapon = ResourceDatabase<WeaponBase>.GetAny();
+            LoadedMap.SpawnAt(playerEntity, new Vec2Int(0, 0));
 
             Entity enemyEntity = new Entity(entityBase, Faction.Enemy);
-            LoadedMap.SpawnEntity(enemyEntity, new Vec2Int(5, 5));
+            LoadedMap.SpawnAt(enemyEntity, new Vec2Int(5, 5));
             enemyEntity.Renderer.Modulate = Colors.Red;
 
             PlayerTurn playerTurn = new PlayerTurn();

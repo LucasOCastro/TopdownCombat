@@ -5,9 +5,10 @@ namespace CombatGame
     public static class ResourceLoader
     {
         private const string resourcesPath = "res://Resources/";
-        private const string terrainResourcesPath = resourcesPath+"Terrain";
-        private const string entityBasesResourcesPath = resourcesPath+"Entities";
-        private const string weaponsResourcesPath = resourcesPath+"Items/Weapons";
+        private const string terrainResourcesPath = resourcesPath + "Terrain";
+        private const string entityBasesResourcesPath = resourcesPath + "Entities";
+        private const string weaponsResourcesPath = resourcesPath + "Items/Weapons";
+        private const string structuresResourcePath = resourcesPath + "Structures";
 
         public static void LoadAll()
         {
@@ -18,7 +19,8 @@ namespace CombatGame
             }
 
             LoadAllInDir<EntityBase>(entityBasesResourcesPath, ResourceDatabase<EntityBase>.Register);
-            LoadAllInDir<Weapon>(weaponsResourcesPath, ResourceDatabase<Weapon>.Register);
+            LoadAllInDir<WeaponBase>(weaponsResourcesPath, ResourceDatabase<WeaponBase>.Register);
+            LoadAllInDir<StructureBase>(structuresResourcePath, ResourceDatabase<StructureBase>.Register);
         }
 
         public static ImageTexture GenTerrainsTexture()

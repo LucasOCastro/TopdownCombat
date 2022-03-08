@@ -5,8 +5,8 @@ namespace CombatGame
     public class ShootAction : Action
     {
         private Vec2Int target;
-        private Weapon weapon;
-        public ShootAction(Entity shooter, Weapon weapon, Vec2Int target) : base(shooter, weapon.ActionPointCost)
+        private WeaponBase weapon;
+        public ShootAction(Entity shooter, WeaponBase weapon, Vec2Int target) : base(shooter, weapon.ActionPointCost)
         {
             this.weapon = weapon;
             this.target = target;
@@ -35,7 +35,7 @@ namespace CombatGame
         private void OnBulletLand()
         {
             bullet.QueueFree();
-            Entity entity = GameManager.Instance.LoadedMap.EntityAt(hitTile);
+            Entity entity = GameManager.Instance.LoadedMap.GetAt<Entity>(hitTile);
             if (entity != null)
             {
                 entity.Damage(weapon.Damage);
@@ -52,11 +52,14 @@ namespace CombatGame
             bullet.LookAt(hitTileCenter);
         }
 
+        //On miss, may be stopped by any cover along the bullets path and may hit another tile.
+        //On a hit, may only be stopped by the cover in use by the target entity.
         private Vec2Int CalcHitTile()
         {
             float hitChance = AttackUtility.CalculateRangedHitChance(Doer, weapon, target);
             float random = Random.Randf();
-            return (random < hitChance) ? target : AttackUtility.CalculateMissedHitTile(Doer.Position, target, hitChance, random);
+            GD.Print($"{random}\\{hitChance}");
+            return (random <= hitChance) ? target : AttackUtility.CalculateMissedHitTile(Doer.Position, target, hitChance, random);
         }
     }
 }

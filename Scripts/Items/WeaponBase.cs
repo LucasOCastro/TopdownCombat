@@ -2,11 +2,9 @@ using Godot;
 
 namespace CombatGame
 {
-    public class Weapon : Resource
+    //TODO item resource
+    public class WeaponBase : Resource
     {
-        [Export]
-        public string Label { get; private set; }
-
         [Export]
         public int ActionPointCost { get; private set; } = 50;
 

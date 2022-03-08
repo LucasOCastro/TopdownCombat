@@ -11,27 +11,37 @@ namespace CombatGame
         private int XYToIndex(int x, int y) => (y * Size) + x;
         private Vec2Int IndexToXY(int i) => new Vec2Int(Mathf.FloorToInt(i/Size), (i % Size));
 
-        private Entity[] entityGrid;
-        private Terrain[] terrainGrid;
-        public Terrain TerrainAt(Vec2Int xy) => terrainGrid[XYToIndex(xy)];
-        public Entity EntityAt(Vec2Int xy) => entityGrid[XYToIndex(xy)];
-
         public List<Entity> AllEntities { get; } = new List<Entity>();
         private Dictionary<Faction, List<Entity>> entitiesByFaction = new Dictionary<Faction, List<Entity>>();
         public List<Entity> EntitiesOfFaction(Faction faction) => entitiesByFaction.GetOrAddNew(faction);
+        public void RegisterInFaction(Entity entity) => EntitiesOfFaction(entity.Faction).Add(entity);
+        public void UnregisterFromFaction(Entity entity) => EntitiesOfFaction(entity.Faction).Remove(entity);
 
-        public void UpdateEntityPosition(Entity entity, Vec2Int from, Vec2Int to)
+        private Terrain[] terrainGrid;
+        public Terrain TerrainAt(Vec2Int xy) => terrainGrid[XYToIndex(xy)];
+
+        private Dictionary<System.Type, MapObjectInstanceBase[]> gridsDict = new Dictionary<System.Type, MapObjectInstanceBase[]>();
+        private Dictionary<System.Type, List<MapObjectInstanceBase>> listsDict = new Dictionary<System.Type, List<MapObjectInstanceBase>>();
+        private MapObjectInstanceBase[] GetGrid<T>() => gridsDict.GetOrAddNew(typeof(T), Size * Size);
+        private List<MapObjectInstanceBase> GetList<T>() => listsDict.GetOrAddNew(typeof(T));
+        public T GetAt<T>(Vec2Int xy) where T : MapObjectInstanceBase => GetGrid<T>()[XYToIndex(xy)] as T;
+
+        public void UpdatePosition<T>(T obj, Vec2Int from, Vec2Int to) where T: MapObjectInstanceBase
         {
+            //FIXME not working
+            var grid = GetGrid<T>();
             int fromIndex = XYToIndex(from);
-            if (entityGrid[fromIndex] == entity) entityGrid[fromIndex] = null;
-            entityGrid[XYToIndex(to)] = entity;
+            if (grid[fromIndex] == obj) grid[fromIndex] = null;
+            grid[XYToIndex(to)] = obj;
 
-            if (entity.Position != to) entity.Position = to;
+            if (obj.Position != to) obj.Position = to;
         }
 
         public Vector2 GetTileCenter(Vec2Int tile) => ((Vector2)tile + Vector2.One * .5f) * GameManager.GameScale;
 
         public Vec2Int GetTile(Vector2 worldPos) => Vec2Int.Floor(worldPos / GameManager.GameScale);
+
+        public bool CanSeeThrough(Vec2Int tile) => GetAt<Structure>(tile)?.Base.CanSeeThrough ?? true;
 
         public Vec2Int GetMousePosition()
         {
@@ -41,6 +51,8 @@ namespace CombatGame
         }
 
         public bool InBounds(Vec2Int tile) => tile.x >= 0 && tile.x < Size && tile.y >= 0 && tile.y < Size;
+
+        
 
         public IEnumerable<Vec2Int> GetNeighbors(Vec2Int center){
             for (int x = -1; x <= 1; x++)
@@ -61,30 +73,30 @@ namespace CombatGame
         public Map(int size)
         {
             Size = size;
-            int area = Size * Size;
-            entityGrid = new Entity[area];
-            terrainGrid = new Terrain[area];
+            terrainGrid = new Terrain[size * size];
 
             FillTerrain();
+
+            StructureBase structure = ResourceDatabase<StructureBase>.GetAny();
+            var grid = GetGrid<Structure>();
+            SpawnAt(new Structure(structure), new Vec2Int(4, 4));
+            SpawnAt(new Structure(structure), new Vec2Int(5, 4));
+            SpawnAt(new Structure(structure), new Vec2Int(4, 5));
         }
 
-        public void SpawnEntity(Entity entity, Vec2Int position)
+        public void SpawnAt<T>(T obj, Vec2Int position) where T: MapObjectInstanceBase
         {
-            entityGrid[XYToIndex(position)] = entity;
-            entity.OnSpawn(this, position);
+            var grid = GetGrid<T>();
+            grid[XYToIndex(position)] = obj;
+            obj.OnSpawn(this, position);
 
-            AllEntities.Add(entity);
-            List<Entity> factionList = entitiesByFaction.GetOrAddNew(entity.Faction);
-            factionList.Add(entity);
+            GetList<T>().Add(obj);
         }
 
-        public void RemoveEntity(Entity entity)
+        public void Despawn<T>(T obj) where T: MapObjectInstanceBase
         {
-            entityGrid[XYToIndex(entity.Position)] = null;
-
-            AllEntities.Remove(entity);
-            List<Entity> factionList = entitiesByFaction[entity.Faction];
-            factionList.Remove(entity);
+            GetGrid<T>()[XYToIndex(obj.Position)] = null;
+            GetList<T>().Remove(obj);
         }
 
         private void FillTerrain()

@@ -29,14 +29,9 @@ namespace CombatGame
         public static bool RandBool() => RNG.RandiRange(0, 1) == 0;
 
         /// <returns>Returns 1 or -1.</returns>
-        public static int RandSign() => RandBool() ? 1 : -1;
+        public static int RandSignNoZero() => RandBool() ? 1 : -1;
 
         /// <returns>Returns 0, 1 or -1.</returns>
-        public static int RandSignZero() => RandBool() ? 0 : RandSign();
-
-        /// <returns>Returns the value with the same or opposite sign.</returns>
-        public static float RandomlySigned(float val) => val * RandSign();
-
-        
+        public static int RandSign() => RandBool() ? 0 : RandSignNoZero();        
     }
 }

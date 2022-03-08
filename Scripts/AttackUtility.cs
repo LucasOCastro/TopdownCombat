@@ -1,4 +1,5 @@
 using Mathf = Godot.Mathf;
+using Vector2 = Godot.Vector2;
 
 namespace CombatGame
 {
@@ -10,8 +11,8 @@ namespace CombatGame
         //Distance fallof formula from https://www.ufopaedia.org/index.php/Chance_to_Hit_(EU2012)
         //float distanceFallof = 42 - (4.5f * distance);
 
-        //TODO study this better
-        public static float CalculateRangedHitChance(Entity attacker, Weapon weapon, Vec2Int target)
+        //TODO study better formulas
+        public static float CalculateRangedHitChance(Entity attacker, WeaponBase weapon, Vec2Int target)
         {
             float distance = attacker.Position.IntDistanceTo(target);
             // float distanceAccuracy = Mathf.Clamp(1f - (distance / attacker.MaximumEfficientShootDistance), 0, 1);
@@ -40,17 +41,35 @@ namespace CombatGame
             // var randY = Random.RNG.Randfn(meanY, 1);
             // int yOffset = Mathf.CeilToInt(Mathf.Abs(randY)) * Mathf.Sign(randY);
 
-            int xOffset = Random.RandSignZero();
-            int yOffset = Random.RandSignZero();
+            int xOffset = Random.RandSign();
+            int yOffset = Random.RandSign();
             if (xOffset == 0 && yOffset == 0)
             {
                 if (Random.RandBool())
-                    xOffset = Random.RandSign();
+                    xOffset = Random.RandSignNoZero();
                 else
-                    yOffset = Random.RandSign();
+                    yOffset = Random.RandSignNoZero();
             }
 
             return target + new Vec2Int(xOffset, yOffset);
+        }
+
+
+        public static bool IsInLineOfSight(Entity entity, Vec2Int tile)
+        {
+            Map map = entity.CurrentMap;
+            Vector2 start = map.GetTileCenter(entity.Position);
+            Vector2 end = map.GetTileCenter(tile);
+            Vec2Int[] line = Bresenham.Rasterize(start, end, GameManager.GameScale);
+            for (int i = 0; i < line.Length; i++)
+            {
+                Vec2Int pos = line[i];
+                if (!map.CanSeeThrough(pos))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

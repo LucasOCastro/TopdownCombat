@@ -134,7 +134,7 @@ namespace CombatGame
             switch (button)
             {
                 case (int)ButtonList.Left:
-                    Entity entity = map.EntityAt(tile);
+                    Entity entity = map.GetAt<Entity>(tile);
                     Select(entity);
                     break;
                 case (int)ButtonList.Right:
@@ -142,7 +142,7 @@ namespace CombatGame
                         break;
                     }
 
-                    Entity entityAt = map.EntityAt(tile);
+                    Entity entityAt = map.GetAt<Entity>(tile);
                     if (entityAt != null && currentShootAimer != null && currentShootAimer.CanCurrentlyBeSelected()){
                         selectedActionAimer = currentShootAimer;
                     }

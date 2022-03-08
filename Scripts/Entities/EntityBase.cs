@@ -2,14 +2,8 @@ using Godot;
 
 namespace CombatGame
 {
-    public class EntityBase : Resource
+    public class EntityBase : MapObjectResource
     {
-        [Export]
-        public string Label {get; private set;}
-
-        [Export]
-        public Texture Texture {get; private set;}
-
         [Export]
         public int MaxActionPoints { get; private set; } = 100;
 

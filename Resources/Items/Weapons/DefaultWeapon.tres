@@ -1,16 +1,16 @@
 [gd_resource type="Resource" load_steps=3 format=2]
 
-[ext_resource path="res://Scripts/Items/Weapon.cs" type="Script" id=1]
+[ext_resource path="res://Scripts/Items/WeaponBase.cs" type="Script" id=1]
 [ext_resource path="res://addons/better-texture-array/icons/GREEN.svg" type="Texture" id=2]
 
 [resource]
 script = ExtResource( 1 )
-Label = "DefaultWeapon"
 ActionPointCost = 30
 BulletTexture = ExtResource( 2 )
 BulletScale = 0.15
 BulletSpeed = 200.0
 Damage = 5
+Accuracy = 1.0
 MinDistanceForFallof = 0
 MaxDistanceForFallof = 1000
 DistanceAccuracyFallof = 0.005

@@ -43,6 +43,14 @@ namespace CombatGame
             }
             return val;
         }
+        public static T2[] GetOrAddNew<T1, T2>(this Dictionary<T1, T2[]> dict, T1 key, int newSize)
+        {
+            if (!dict.TryGetValue(key, out T2[] val)){
+                val = new T2[newSize];
+                dict.Add(key, val);
+            }
+            return val;
+        }
 
         public static string ToStringEnumerable<T>(this IEnumerable<T> col, string separator = " || ")
         {

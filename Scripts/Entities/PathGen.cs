@@ -69,8 +69,12 @@ namespace CombatGame
             if (!terrain.Passable){
                 return false;
             }
-            Entity entityOnTile = map.EntityAt(tile);
+            Entity entityOnTile = map.GetAt<Entity>(tile);
             if (entityOnTile != null && entityOnTile.Faction != entity.Faction){
+                return false;
+            }
+            Structure structureOnTile = map.GetAt<Structure>(tile);
+            if (structureOnTile != null && !structureOnTile.Base.Passable){
                 return false;
             }
             return true;
@@ -81,8 +85,7 @@ namespace CombatGame
             if (!IsPassableFor(entity, tile, map)){
                 return false;
             }
-            Entity entityOnTile = map.EntityAt(tile);
-            if (entityOnTile != null){
+            if (map.GetAt<Entity>(tile) != null || map.GetAt<Structure>(tile) != null){
                 return false;
             }
             return true;

@@ -15,7 +15,7 @@ namespace CombatGame
         public void OnMapChanged(MapRenderer mapRenderer, Map newMap)
         {
             RectGlobalPosition = mapRenderer.Position;
-            RectSize = GameManager.GameScale * newMap.Size;
+            RectSize = Vector2.One * GameManager.GameScale * newMap.Size;
             Update();
         }
         #region TILE_HIGHLIGHTS
@@ -60,7 +60,7 @@ namespace CombatGame
                 return;
             }
 
-            Vector2 scale = GameManager.GameScale;
+            Vector2 scale = Vector2.One * GameManager.GameScale;
             Vector2 startPos = Vector2.Zero;
             //TODO this is ugly
             for (int i = 0; i < map.Size - 1; i++)

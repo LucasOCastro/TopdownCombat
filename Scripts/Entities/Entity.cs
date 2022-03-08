@@ -3,30 +3,8 @@ using System.Collections.Generic;
 
 namespace CombatGame
 {
-    public class Entity
+    public class Entity : MapObjectInstance<EntityBase>
     {
-        public EntityBase Base {get;}
-
-        public Map CurrentMap {get; private set;}
-
-        private Vec2Int _position;
-        public Vec2Int Position
-        {
-            get => _position;
-            set
-            {
-                if (CurrentMap == null) return;
-
-                Vec2Int oldPos = _position;
-                _position = value;
-                Renderer.Position = CurrentMap.GetTileCenter(_position);
-
-                CurrentMap.UpdateEntityPosition(this, oldPos, _position);
-            }
-        }
-
-        public Sprite Renderer {get; private set;}
-
         public Faction Faction { get; }
         public bool IsPlayer => Faction == Faction.Player;
         public bool IsEnemy => Faction == Faction.Enemy;
@@ -35,7 +13,7 @@ namespace CombatGame
         public int MaximumSeeDistance { get; } = 200;
         public int MaximumEfficientShootDistance { get; } = 114;
 
-        public Weapon EquippedWeapon { get; set; }
+        public WeaponBase EquippedWeapon { get; set; }
 
         private int _actionPoints;
         public int ActionPoints
@@ -64,7 +42,7 @@ namespace CombatGame
         private void Die()
         {
             Renderer.QueueFree();
-            CurrentMap.RemoveEntity(this);
+            CurrentMap.Despawn(this);
         }
 
         public void Damage(int damage)
@@ -72,17 +50,44 @@ namespace CombatGame
             Health -= damage;
         }
 
-        public Entity(EntityBase entityBase, Faction faction)
+        //If any surrounding tile is possibly seen, the target tile is also seen.
+        //FIXME THIS IS ALL WRONG REEE
+        public bool CanSeeTile(Vec2Int tile)
         {
-            Base = entityBase;
+            if (AttackUtility.IsInLineOfSight(this, tile)){
+                return true;
+            }
+            // for (int x = -1; x <= 1; x++)
+            // {
+            //     for (int y = -1; y <= 1; y++)
+            //     {
+            //         if (x == 0 && y == 0) continue;
+            //         Vec2Int offset = new Vec2Int(x, y);
+            //         if (CurrentMap.InBounds(tile + offset) && AttackUtility.IsInLineOfSight(this, tile + offset)){
+            //             return true;
+            //         }
+            //     }
+            // }
+            return false;
+        }
+
+        public Entity(EntityBase entityBase, Faction faction) : base(entityBase)
+        {
             Faction = faction;
+            MaxOutActionPoints();
+            MaxOutHealth();
+        }
 
-            Renderer = new Sprite();
-            Renderer.Texture = entityBase.Texture;
-            Renderer.Scale = GameManager.GameScale / Renderer.Texture.GetSize();
+        public override void OnSpawn(Map map, Vec2Int position)
+        {
+            base.OnSpawn(map, position);
+            map.RegisterInFaction(this);
+        }
 
-            ActionPoints = Base.MaxActionPoints;
-            Health = Base.BaseHealth;
+        public override void OnDespawn(Map map, Vec2Int position)
+        {
+            base.OnDespawn(map, position);
+            map.UnregisterFromFaction(this);
         }
 
         public List<ActionAimer> GenerateActions()
@@ -96,13 +101,6 @@ namespace CombatGame
             }
 
             return result;
-        }
-
-        public void OnSpawn(Map map, Vec2Int position)
-        {
-            CurrentMap = map;
-            GameManager.Instantiate(Renderer);
-            Position = position;
         }
     }
 }
