@@ -54,12 +54,9 @@ namespace CombatGame
             return target + new Vec2Int(xOffset, yOffset);
         }
 
-
-        public static bool IsInLineOfSight(Entity entity, Vec2Int tile)
+        //TODO rework "casting" to a specialized file later
+        private static bool LineCast(Vector2 start, Vector2 end, Map map)
         {
-            Map map = entity.CurrentMap;
-            Vector2 start = map.GetTileCenter(entity.Position);
-            Vector2 end = map.GetTileCenter(tile);
             Vec2Int[] line = Bresenham.Rasterize(start, end, GameManager.GameScale);
             for (int i = 0; i < line.Length; i++)
             {
@@ -70,6 +67,31 @@ namespace CombatGame
                 }
             }
             return true;
+        }
+
+        public static bool IsInLineOfSight(Entity entity, Vec2Int tile)
+        {
+            Map map = entity.CurrentMap;
+            Vector2 start = map.GetTileCenter(entity.Position);
+            Vector2 end = map.GetTileCenter(tile);
+            if (LineCast(start, end, map)){
+                return true;
+            }
+
+            for (int x = -1; x <= 1; x++)
+            {
+                for (int y = -1; y <= 1; y++)
+                {
+                    if (x == 0 && y == 0){
+                        continue;
+                    }
+                    Vector2 offsetEnd = end + (new Vector2(x, y) * .5f * GameManager.GameScale);
+                    if (LineCast(start, offsetEnd, map)){
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }
