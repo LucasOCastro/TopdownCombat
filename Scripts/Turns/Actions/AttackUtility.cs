@@ -34,18 +34,8 @@ namespace CombatGame
         }
 
 
-        public static Vec2Int CalculateMissedHitTile(Vec2Int origin, Vec2Int target, float hitChance, float rolledHit)
+        public static Vec2Int CalculateMissedHitTile(Vec2Int origin, Vec2Int target)
         {
-            // float missStrength = rolledHit - hitChance;
-
-            // float meanX = Random.RandomlySigned(missStrength);
-            // var randX = Random.RNG.Randfn(meanX, 1);
-            // int xOffset = Mathf.CeilToInt(Mathf.Abs(randX)) * Mathf.Sign(randX);
-
-            // float meanY = Random.RandomlySigned(missStrength);
-            // var randY = Random.RNG.Randfn(meanY, 1);
-            // int yOffset = Mathf.CeilToInt(Mathf.Abs(randY)) * Mathf.Sign(randY);
-
             int xOffset = Random.RandSign();
             int yOffset = Random.RandSign();
             if (xOffset == 0 && yOffset == 0)

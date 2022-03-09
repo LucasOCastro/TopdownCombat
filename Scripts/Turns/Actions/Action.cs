@@ -3,6 +3,7 @@ namespace CombatGame
     public abstract class Action
     {
         public Entity Doer { get; }
+        public Map Map => Doer.CurrentMap;
         //TODO unsure about cost being passed in the constructor of only this and not derived
         public int Cost { get; }
         public Action(Entity doer, int cost)

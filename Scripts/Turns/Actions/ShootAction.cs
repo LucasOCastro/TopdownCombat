@@ -25,6 +25,13 @@ namespace CombatGame
 
             bullet.GlobalPosition = bullet.GlobalPosition.MoveToward(hitTileCenter, weapon.BulletSpeed * delta);
 
+            //If will miss, might be stopped by any cover in the path.
+            Vec2Int currentTile = Map.GetTile(bullet.GlobalPosition);
+            Structure structureOnTile = Map.GetAt<Structure>(currentTile);
+            if (hitTile != target && structureOnTile != null && Random.Chance(structureOnTile.Base.CoverStrength)){
+                hitTile = currentTile;
+            }
+
             if (bullet.GlobalPosition == hitTileCenter){
                 OnBulletLand();
                 return true;
@@ -57,17 +64,20 @@ namespace CombatGame
         private Vec2Int CalcHitTile()
         {
             var hitInfo = AttackUtility.CalculateRangedHitChance(Doer, weapon, target);
-            float random = Random.Randf();
-            GD.Print($"COVER: {random}\\{hitInfo.totalCoverStrength}");
 
-            if (random < hitInfo.totalCoverStrength)//(Random.Chance(hitInfo.totalCoverStrength))
+            //If should miss, miss anywhere
+            if (!Random.Chance(hitInfo.HitChance))
+            {
+                return AttackUtility.CalculateMissedHitTile(Doer.Position, target);
+            }
+
+            //If stopped by cover, hit random cover provider
+            if (Random.Chance(hitInfo.totalCoverStrength))
             {
                 return hitInfo.covers.RandomElementByWeight(c => c.coverStrength).coverProvider.Position;
             }
 
-            random = Random.Randf();
-            GD.Print($"HIT: {random}\\{hitInfo.HitChance}");
-            return (random <= hitInfo.HitChance) ? target : AttackUtility.CalculateMissedHitTile(Doer.Position, target, hitInfo.HitChance, random);
+            return target;
         }
     }
 }

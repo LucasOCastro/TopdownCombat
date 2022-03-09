@@ -34,6 +34,6 @@ namespace CombatGame
         /// <returns>Returns 1 or -1.</returns>
         public static int RandSignNoZero() => Bool() ? 1 : -1;
         /// <returns>Returns 0, 1 or -1.</returns>
-        public static int RandSign() => Bool() ? 0 : RandSignNoZero();        
+        public static int RandSign() => Bool() ? 0 : RandSignNoZero();
     }
 }
