@@ -28,8 +28,6 @@ namespace CombatGame
 
         public void UpdatePosition(MapObjectInstanceBase obj, Vec2Int from, Vec2Int to)
         {
-            GD.Print("Update for " + obj + " from " + from + XYToIndex(from) + " to " + to + XYToIndex(to));
-            //FIXME not working
             var grid = GetGrid(obj.GetType());
             int fromIndex = XYToIndex(from);
             if (grid[fromIndex] == obj) grid[fromIndex] = null;
@@ -80,8 +78,8 @@ namespace CombatGame
 
             StructureBase structure = ResourceDatabase<StructureBase>.GetAny();
             var grid = GetGrid(typeof(Structure));
-            SpawnAt(new Structure(structure), new Vec2Int(4, 4));
-            SpawnAt(new Structure(structure), new Vec2Int(5, 4));
+            // SpawnAt(new Structure(structure), new Vec2Int(4, 4));
+            // SpawnAt(new Structure(structure), new Vec2Int(5, 4));
             SpawnAt(new Structure(structure), new Vec2Int(4, 5));
         }
 

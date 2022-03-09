@@ -73,6 +73,33 @@ namespace CombatGame
             }
             return tx.ToString();
         }
+
+        public static T RandomElement<T>(this IList<T> list)
+        {
+            if (list.Count == 0) throw new System.Exception("Tried to get random element from empty collection.");
+            return list[Random.RandiRange(0, list.Count)];
+        }
+
+        public static T RandomElementByWeight<T>(this IList<T> list, System.Func<T, float> weightSelector)
+        {
+            if (list.Count == 0) throw new System.Exception("Tried to get random element from empty collection.");
+
+            float[] weightSums = new float[list.Count];
+            float totalWeight = 0f;
+            for (int i = 0; i < list.Count; i++)
+            {
+                weightSums[i] = totalWeight + weightSelector(list[i]);
+            }
+
+            float rand = Random.RandfRange(0f, totalWeight);
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (rand <= weightSums[i]){
+                    return list[i];
+                }
+            }
+            return default;
+        }
     }
     
 }

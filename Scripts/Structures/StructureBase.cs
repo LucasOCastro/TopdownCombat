@@ -8,5 +8,8 @@ namespace CombatGame
 
         [Export]
         public bool CanSeeThrough { get; private set; }
+
+        [Export]
+        public float CoverStrength { get; private set; }
     }
 }

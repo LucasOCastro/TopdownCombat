@@ -1,33 +1,38 @@
 using Mathf = Godot.Mathf;
 using Vector2 = Godot.Vector2;
+using System.Collections.Generic;
 
 namespace CombatGame
 {
+    
+    
     public static class AttackUtility
     {
         //Firing accuracy formula from : https://github.com/OpenXcom/OpenXcom/blob/eacdad08e08d2991cbd958c04f02d290e12a8227/src/Savegame/BattleUnit.cpp
         //accuracyStat * weaponAccuracy * kneelingbonus(1.15) * one-handPenalty(0.8) * woundsPenalty(% health) * critWoundsPenalty (-10%/wound)
 
         //Distance fallof formula from https://www.ufopaedia.org/index.php/Chance_to_Hit_(EU2012)
+        //this aint even a formula dumbass
         //float distanceFallof = 42 - (4.5f * distance);
 
         //TODO study better formulas
-        public static float CalculateRangedHitChance(Entity attacker, WeaponBase weapon, Vec2Int target)
+        public static HitChanceReport CalculateRangedHitChance(Entity attacker, WeaponBase weapon, Vec2Int target)
         {
-            float distance = attacker.Position.IntDistanceTo(target);
             // float distanceAccuracy = Mathf.Clamp(1f - (distance / attacker.MaximumEfficientShootDistance), 0, 1);
-            float distanceAccuracy = 1f;
-            Godot.GD.Print($"{distance}\\{attacker.MaximumEfficientShootDistance}");
-            
+
+            HitChanceReport hitChance = new HitChanceReport();
+            hitChance.weapon = weapon;
+
+            float distance = attacker.Position.DistanceTo(target);
             if (distance >= weapon.MinDistanceForFallof && distance <= weapon.MaxDistanceForFallof){
-                float fallof = weapon.DistanceAccuracyFallof * distance;
-                distanceAccuracy -= fallof;
-                distanceAccuracy = Mathf.Clamp(distanceAccuracy, 0, 1);
+                hitChance.distanceFallof = weapon.DistanceAccuracyFallof * distance;
             }
-            
-            float hitChance = weapon.Accuracy * distanceAccuracy;
+
+            hitChance.covers = CoverUtility.GetCovers(target, attacker.Position, attacker.CurrentMap, out hitChance.totalCoverStrength);
+
             return hitChance;
         }
+
 
         public static Vec2Int CalculateMissedHitTile(Vec2Int origin, Vec2Int target, float hitChance, float rolledHit)
         {
@@ -45,7 +50,7 @@ namespace CombatGame
             int yOffset = Random.RandSign();
             if (xOffset == 0 && yOffset == 0)
             {
-                if (Random.RandBool())
+                if (Random.Bool())
                     xOffset = Random.RandSignNoZero();
                 else
                     yOffset = Random.RandSignNoZero();
@@ -55,18 +60,22 @@ namespace CombatGame
         }
 
         //TODO rework "casting" to a specialized file later
-        private static bool LineCast(Vector2 start, Vector2 end, Map map)
+        private static bool LineCast(Vec2Int startTile, Vec2Int endTile, Map map, System.Func<Vec2Int, bool> hitValidator, out Vec2Int hit)
+            => LineCast(map.GetTileCenter(startTile), map.GetTileCenter(endTile), hitValidator, out hit);
+        private static bool LineCast(Vector2 start, Vector2 end, System.Func<Vec2Int, bool> hitValidator, out Vec2Int hit)
         {
             Vec2Int[] line = Bresenham.Rasterize(start, end, GameManager.GameScale);
             for (int i = 0; i < line.Length; i++)
             {
                 Vec2Int pos = line[i];
-                if (!map.CanSeeThrough(pos))
+                if (hitValidator(pos))
                 {
-                    return false;
+                    hit = pos;
+                    return true;
                 }
             }
-            return true;
+            hit = Vec2Int.One * -1;
+            return false;
         }
 
         public static bool IsInLineOfSight(Entity entity, Vec2Int tile)
@@ -74,7 +83,8 @@ namespace CombatGame
             Map map = entity.CurrentMap;
             Vector2 start = map.GetTileCenter(entity.Position);
             Vector2 end = map.GetTileCenter(tile);
-            if (LineCast(start, end, map)){
+            bool hitValidator(Vec2Int t) => map.CanSeeThrough(t);
+            if (LineCast(start, end, hitValidator, out _)){
                 return true;
             }
 
@@ -86,7 +96,7 @@ namespace CombatGame
                         continue;
                     }
                     Vector2 offsetEnd = end + (new Vector2(x, y) * .5f * GameManager.GameScale);
-                    if (LineCast(start, offsetEnd, map)){
+                    if (LineCast(start, offsetEnd, hitValidator, out _)){
                         return true;
                     }
                 }

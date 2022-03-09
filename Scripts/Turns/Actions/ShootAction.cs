@@ -56,10 +56,18 @@ namespace CombatGame
         //On a hit, may only be stopped by the cover in use by the target entity.
         private Vec2Int CalcHitTile()
         {
-            float hitChance = AttackUtility.CalculateRangedHitChance(Doer, weapon, target);
+            var hitInfo = AttackUtility.CalculateRangedHitChance(Doer, weapon, target);
             float random = Random.Randf();
-            GD.Print($"{random}\\{hitChance}");
-            return (random <= hitChance) ? target : AttackUtility.CalculateMissedHitTile(Doer.Position, target, hitChance, random);
+            GD.Print($"COVER: {random}\\{hitInfo.totalCoverStrength}");
+
+            if (random < hitInfo.totalCoverStrength)//(Random.Chance(hitInfo.totalCoverStrength))
+            {
+                return hitInfo.covers.RandomElementByWeight(c => c.coverStrength).coverProvider.Position;
+            }
+
+            random = Random.Randf();
+            GD.Print($"HIT: {random}\\{hitInfo.HitChance}");
+            return (random <= hitInfo.HitChance) ? target : AttackUtility.CalculateMissedHitTile(Doer.Position, target, hitInfo.HitChance, random);
         }
     }
 }

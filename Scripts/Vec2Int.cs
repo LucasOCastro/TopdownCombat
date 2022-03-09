@@ -48,14 +48,15 @@ namespace CombatGame
             return (directCount * PathGen.BASE_COST) + (diagonalCount * PathGen.DIAGONAL_COST);
         }
 
-        public override string ToString()
+        public float DistanceTo(Vec2Int tile)
         {
-            return $"({x},{y})";
+            Vec2Int dif = tile - this;
+            return Mathf.Sqrt((dif.x * dif.x) + (dif.y * dif.y));
         }
 
+        public override string ToString() => $"({x},{y})";
         public override bool Equals(object obj) => obj is Vec2Int other && Equals(other);
         public bool Equals(Vec2Int other) => x == other.x && y == other.y;
-
         public override int GetHashCode() => (x,y).GetHashCode();
 
         public static explicit operator Vector2(Vec2Int intVec) => new Vector2(intVec.x, intVec.y);
@@ -66,6 +67,10 @@ namespace CombatGame
         }
         public static Vec2Int operator -(Vec2Int a, Vec2Int b){
             return new Vec2Int(a.x - b.x, a.y - b.y);
+        }
+
+        public static Vec2Int operator *(Vec2Int a, int b){
+            return new Vec2Int(a.x * b, a.y * b);
         }
 
         public static bool operator ==(Vec2Int a, Vec2Int b){
