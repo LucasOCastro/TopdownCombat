@@ -9,4 +9,4 @@ Label = "DefaultWall"
 Sprite = ExtResource( 2 )
 Passable = false
 CanSeeThrough = false
-CoverStrength = 0.8
+CoverStrength = 1.0
