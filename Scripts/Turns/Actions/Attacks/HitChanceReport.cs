@@ -11,11 +11,19 @@ namespace CombatGame
         public List<CoverInfo> covers;
         public float totalCoverStrength;
 
-        public float HitChance 
+        public float PastCoverHitChance 
         {
             get
             {
                 return Mathf.Clamp(weapon.Accuracy - distanceFallof, 0, 1);
+            }
+        }
+
+        public float EstimatedAbsoluteHitChance
+        {
+            get 
+            {
+                return (1 - totalCoverStrength) * PastCoverHitChance;
             }
         }
     }

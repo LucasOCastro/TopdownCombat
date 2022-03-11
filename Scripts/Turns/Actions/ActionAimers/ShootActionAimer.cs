@@ -13,6 +13,7 @@ namespace CombatGame
         public override bool CanCurrentlyBeSelected() => ActionDoer.ActionPoints >= weapon.ActionPointCost;
 
         private Vec2Int? currentTargetTile = null;
+        private HitChanceReport currentHitChanceReport;
         private bool canAimAtCurrentTarget;
         public override Action Tick(float delta)
         {
@@ -21,6 +22,7 @@ namespace CombatGame
             if (currentTargetTile == null || tile != currentTargetTile)
             {
                 currentTargetTile = tile;
+                currentHitChanceReport = AttackUtility.CalculateRangedHitChance(ActionDoer, weapon, tile);
                 canAimAtCurrentTarget = CanAimAt(tile);
             }
 
@@ -41,7 +43,7 @@ namespace CombatGame
                 return null;
             }
 
-            return new ShootAction(ActionDoer, weapon, currentTargetTile.Value);
+            return new ShootAction(ActionDoer, weapon, currentTargetTile.Value, currentHitChanceReport);
         }
 
         private bool CanAimAt(Vec2Int tile)
@@ -53,6 +55,9 @@ namespace CombatGame
                 return false;
             }
             if (!ActionDoer.CanSeeTile(tile)){
+                return false;
+            }
+            if (currentHitChanceReport.EstimatedAbsoluteHitChance == 0){
                 return false;
             }
             return true;

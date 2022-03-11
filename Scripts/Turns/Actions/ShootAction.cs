@@ -6,11 +6,11 @@ namespace CombatGame
     {
         private Vec2Int target;
         private WeaponBase weapon;
-        public ShootAction(Entity shooter, WeaponBase weapon, Vec2Int target) : base(shooter, weapon.ActionPointCost)
+        public ShootAction(Entity shooter, WeaponBase weapon, Vec2Int target, HitChanceReport hitChanceReport) : base(shooter, weapon.ActionPointCost)
         {
             this.weapon = weapon;
             this.target = target;
-            hitTile = CalcHitTile();
+            hitTile = CalcHitTile(hitChanceReport);
             hitTileCenter = GameManager.Instance.LoadedMap.GetTileCenter(hitTile);
         }
 
@@ -61,20 +61,18 @@ namespace CombatGame
 
         //On miss, may be stopped by any cover along the bullets path and may hit another tile.
         //On a hit, may only be stopped by the cover in use by the target entity.
-        private Vec2Int CalcHitTile()
+        private Vec2Int CalcHitTile(HitChanceReport hitChanceReport)
         {
-            var hitInfo = AttackUtility.CalculateRangedHitChance(Doer, weapon, target);
-
             //If should miss, miss anywhere
-            if (!Random.Chance(hitInfo.HitChance))
+            if (!Random.Chance(hitChanceReport.PastCoverHitChance))
             {
                 return AttackUtility.CalculateMissedHitTile(Doer.Position, target);
             }
 
             //If stopped by cover, hit random cover provider
-            if (Random.Chance(hitInfo.totalCoverStrength))
+            if (Random.Chance(hitChanceReport.totalCoverStrength))
             {
-                return hitInfo.covers.RandomElementByWeight(c => c.coverStrength).coverProvider.Position;
+                return hitChanceReport.covers.RandomElementByWeight(c => c.coverStrength).coverProvider.Position;
             }
 
             return target;
