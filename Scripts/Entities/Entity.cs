@@ -50,24 +50,11 @@ namespace CombatGame
             Health -= damage;
         }
 
-        //If any surrounding tile is possibly seen, the target tile is also seen.
-        //FIXME THIS IS ALL WRONG REEE
         public bool CanSeeTile(Vec2Int tile)
         {
             if (AttackUtility.IsInLineOfSight(this, tile)){
                 return true;
             }
-            // for (int x = -1; x <= 1; x++)
-            // {
-            //     for (int y = -1; y <= 1; y++)
-            //     {
-            //         if (x == 0 && y == 0) continue;
-            //         Vec2Int offset = new Vec2Int(x, y);
-            //         if (CurrentMap.InBounds(tile + offset) && AttackUtility.IsInLineOfSight(this, tile + offset)){
-            //             return true;
-            //         }
-            //     }
-            // }
             return false;
         }
 

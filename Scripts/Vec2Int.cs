@@ -14,6 +14,7 @@ namespace CombatGame
 
 
         public static Vec2Int Floor(Vector2 vector) => new Vec2Int(Mathf.FloorToInt(vector.x), Mathf.FloorToInt(vector.y));
+        public static Vec2Int Ceil(Vector2 vector) => new Vec2Int(Mathf.CeilToInt(vector.x), Mathf.CeilToInt(vector.y));
         public Vec2Int Abs() => new Vec2Int(Mathf.Abs(x), Mathf.Abs(y));
         public Vec2Int Sign() => new Vec2Int(Mathf.Sign(x), Mathf.Sign(y));
 

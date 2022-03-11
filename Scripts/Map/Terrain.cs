@@ -16,6 +16,7 @@ namespace CombatGame
 
         // [Export]
         // public BlendRoughness BlendRoughness {get; private set;}
+        //TODO implement blend strength in shader
         [Export]
         public int BlendStrength {get; private set;}
 

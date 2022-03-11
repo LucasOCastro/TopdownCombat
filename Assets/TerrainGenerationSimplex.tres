@@ -1,7 +1,7 @@
 [gd_resource type="OpenSimplexNoise" format=2]
 
 [resource]
-seed = 4
+seed = 1552
 octaves = 1
 period = 5.3
 persistence = 0.52
