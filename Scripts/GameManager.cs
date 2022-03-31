@@ -35,7 +35,7 @@ namespace CombatGame
 
         [Export]
         private NodePath canvasPath;
-		public CanvasLayer Canvas { get; private set; }
+		public Canvas Canvas { get; private set; }
 
         public void LoadMap (Map map)
 		{
@@ -68,7 +68,7 @@ namespace CombatGame
 
 			GridDrawer = GetNode<GridDrawer>(gridDrawerPath);
             PathDrawer = GetNode<PathDrawer>(pathDrawerPath);
-            Canvas = GetNode<CanvasLayer>(canvasPath);
+            Canvas = GetNode<Canvas>(canvasPath);
 
             LoadMap(new Map(mapSize));
 

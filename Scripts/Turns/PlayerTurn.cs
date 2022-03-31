@@ -12,7 +12,7 @@ namespace CombatGame
         {
             base.StartAction(action);
             SelectAimer(null);
-            GameManager.Instance.Canvas.GetNode<SkillBar>("SkillBar").RefreshAll();
+            GameManager.Instance.Canvas.SkillBar.RefreshAll();
         }
 
         public PlayerTurn() : base(Faction.Player){}
@@ -27,13 +27,13 @@ namespace CombatGame
         {
             base.Start();
             //TODO getnode calls bad >:(
-            GameManager.Instance.Canvas.GetNode<SkillBar>("SkillBar").onActionClicked += SelectAimer;
+            GameManager.Instance.Canvas.SkillBar.onActionClicked += SelectAimer;
         }
         public override void End()
         {
             base.End();
-            GameManager.Instance.Canvas.GetNode<SkillBar>("SkillBar").onActionClicked -= SelectAimer;
-            GameManager.Instance.Canvas.GetNode<SkillBar>("SkillBar").SetActions(null, null);
+            GameManager.Instance.Canvas.SkillBar.onActionClicked -= SelectAimer;
+            GameManager.Instance.Canvas.SkillBar.SetActions(null, null);
         }
 
         public override bool Tick(float delta)
@@ -82,7 +82,7 @@ namespace CombatGame
             }
             CurrentEntity = entity;
 
-            var actionBar = GameManager.Instance.Canvas.GetNode<SkillBar>("SkillBar");
+            var actionBar = GameManager.Instance.Canvas.SkillBar;
             if (CurrentEntity != null && CurrentEntity.IsPlayer)
             {
                 actionBar.SetActions(CurrentEntityActions, entity);
