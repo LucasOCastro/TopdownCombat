@@ -4,6 +4,7 @@ namespace CombatGame
 {
     public static class ResourceLoader
     {
+        //TODO add abstraction
         private const string resourcesPath = "res://Resources/";
         private const string terrainResourcesPath = resourcesPath + "Terrain";
         private const string entityBasesResourcesPath = resourcesPath + "Entities";
@@ -68,7 +69,7 @@ namespace CombatGame
                     continue;
                 }
 
-                T resource = GD.Load<T>(path + "/" + file);
+                T resource = GD.Load(path + "/" + file) as T;
                 if (resource != null)
                 {
                     registerAction(resource);
