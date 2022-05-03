@@ -12,7 +12,6 @@ namespace CombatGame
             Vector2 targetToAttacker = ((Vector2)attackerPos) - ((Vector2)target);
             Vector2 targetToCover = ((Vector2)cover.Position) - ((Vector2)target);
             float angleRad = targetToCover.AngleTo(targetToAttacker);
-            float angle = Mathf.Rad2Deg(angleRad);
 
             // float coverStrength;
             // if (angle <= 30){
@@ -39,6 +38,8 @@ namespace CombatGame
                 if (cover.coverStrength > 0){
                     totalCoverStrength = (1 - totalCoverStrength) * cover.coverStrength;
                     covers.Add(cover);
+                    //TODO THIS IS JUST TESTING
+                    return covers;
                 }
             }
             return covers;

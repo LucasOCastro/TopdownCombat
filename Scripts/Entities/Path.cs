@@ -15,7 +15,7 @@ namespace CombatGame
 
         public int PathCost => internalPath[internalPath.Count - 1].gCost;
 
-        public bool IsBefore(Path path) => End == path.Start || End.AdjacentTo(path.Start);
+        public bool IsBefore(Path path) => End == path.Start || End.IsAdjacentTo(path.Start);
         public bool IsAfter(Path path) => path.IsBefore(this);
 
         public Path(PathGen.Node endNode)
@@ -81,7 +81,7 @@ namespace CombatGame
                 aEnd = aEnd.parent;
             }
 
-            if (!a.End.AdjacentTo(b.Start)){
+            if (!a.End.IsAdjacentTo(b.Start)){
                 throw new System.Exception("Paths are not adjacent in " + nameof(MergePaths));
             }
 

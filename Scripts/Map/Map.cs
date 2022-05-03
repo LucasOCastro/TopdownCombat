@@ -35,7 +35,7 @@ namespace CombatGame
 
             if (obj.Position != to) obj.Position = to;
         }
-
+        //TODO possibly move this to its own utility class
         public Vector2 GetTileCenter(Vec2Int tile) => ((Vector2)tile + Vector2.One * .5f) * GameManager.GameScale;
 
         public Vec2Int GetTile(Vector2 worldPos) => Vec2Int.Floor(worldPos / GameManager.GameScale);

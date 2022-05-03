@@ -11,7 +11,7 @@ namespace CombatGame
         public List<CoverInfo> covers;
         public float totalCoverStrength;
 
-        public float PastCoverHitChance 
+        public float DistanceHitChance 
         {
             get
             {
@@ -23,7 +23,7 @@ namespace CombatGame
         {
             get 
             {
-                return (1 - totalCoverStrength) * PastCoverHitChance;
+                return (1 - totalCoverStrength) * DistanceHitChance;
             }
         }
     }

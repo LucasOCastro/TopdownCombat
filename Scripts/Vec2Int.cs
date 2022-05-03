@@ -28,13 +28,13 @@ namespace CombatGame
             this.y = y;
         }
 
-        public bool AdjacentTo(Vec2Int tile)
+        public bool IsAdjacentTo(Vec2Int tile)
         {
             Vec2Int absDifference = (tile - this).Abs();
             return absDifference.x <= 1 && absDifference.y <= 1;
         }
 
-        public bool DiagonallyAdjacentTo(Vec2Int tile)
+        public bool IsDiagonallyAdjacentTo(Vec2Int tile)
         {
             Vec2Int absDifference = (tile - this).Abs();
             return absDifference.x == 1 && absDifference.y == 1;

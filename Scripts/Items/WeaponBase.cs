@@ -2,6 +2,7 @@ using Godot;
 
 namespace CombatGame
 {
+
     //TODO item resource
     public class WeaponBase : Resource
     {
@@ -9,15 +10,10 @@ namespace CombatGame
         public int ActionPointCost { get; private set; } = 50;
 
         [Export]
-        public Texture BulletTexture { get; private set; }
-        [Export]
-        public float BulletScale { get; private set; } = 1;
-        [Export]
-        public float BulletSpeed { get; private set; } = 10;
+        public BulletData BulletData { get; private set; }
 
         [Export]
         public int Damage { get; private set; }
-
         [Export]
         public float Accuracy { get; private set; } = 1f;
 
